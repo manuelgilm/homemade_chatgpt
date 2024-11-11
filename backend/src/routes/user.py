@@ -4,9 +4,10 @@ from fastapi import Depends
 from app import get_session
 from src.models.user import User
 from sqlmodel import select
+
 user_router = APIRouter(prefix="/users")
 
-#Create
+
 @user_router.get("/user/{username}")
 async def create_user(username:str, session: Session = Depends(get_session)):    
     user = session.exec(select(User).where(User.username == username)).one()
@@ -17,7 +18,7 @@ async def create_user(username:str, session: Session = Depends(get_session)):
         return user.model_dump()
     return {"error": "User already exists"}
 
-#Read
+
 @user_router.get("/user/{username}")
 async def get_user(username:str, session: Session=Depends(get_session)):
     user = session.exec(select(User).where(User.username == username)).one()
@@ -25,7 +26,7 @@ async def get_user(username:str, session: Session=Depends(get_session)):
         return {"error": "User not found"}
     return user.model_dump()
 
-#Update
+
 @user_router.put("/user/{username}")
 async def update_user(username:str, user: User, session: Session = Depends(get_session)):
     user = session.exec(select(User).where(User.username == username)).one()
@@ -38,7 +39,7 @@ async def update_user(username:str, user: User, session: Session = Depends(get_s
     session.refresh(user)
     return user.model_dump()
 
-#Delete
+
 @user_router.delete("/user/{username}")
 async def delete_user(username:str, session: Session = Depends(get_session)):
     user = session.exec(select(User).where(User.username == username)).one()
@@ -48,8 +49,8 @@ async def delete_user(username:str, session: Session = Depends(get_session)):
     session.commit()
     return {"message": "User deleted"}
 
-#List
+
 @user_router.get("/users")
 async def list_users(session: Session = Depends(get_session)):
     users = session.exec(select(User)).all()
-    return [user.model_dump() for user in users]
+    return [user.model_dump() for user in users] 
