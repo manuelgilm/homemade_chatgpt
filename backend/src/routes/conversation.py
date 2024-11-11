@@ -46,3 +46,9 @@ async def delete_conversation(title:str, session: Session = Depends(get_session)
     session.delete(conversation)
     session.commit()
     return {"message": "Conversation deleted"}
+
+#List
+@conversation_router.get("/conversations")
+async def list_conversations(session: Session = Depends(get_session)):
+    conversations = session.exec(select(Conversation)).all()
+    return [conversation.model_dump() for conversation in conversations]
