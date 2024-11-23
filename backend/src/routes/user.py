@@ -1,17 +1,17 @@
 from fastapi import APIRouter 
 from sqlmodel import Session
 from fastapi import Depends
-from app import get_session
+from db import get_session
 from src.models.user import User
 from sqlmodel import select
 
 user_router = APIRouter(prefix="/users")
 
 
-@user_router.get("/user/{username}")
-async def create_user(username:str, session: Session = Depends(get_session)):    
-    user = session.exec(select(User).where(User.username == username)).one()
-    if not user:
+@user_router.post("/user/")
+async def create_user(user:User, session: Session = Depends(get_session)):    
+    user_ = session.exec(select(User).where(User.username == user.username)).first()
+    if not user_:
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -21,7 +21,7 @@ async def create_user(username:str, session: Session = Depends(get_session)):
 
 @user_router.get("/user/{username}")
 async def get_user(username:str, session: Session=Depends(get_session)):
-    user = session.exec(select(User).where(User.username == username)).one()
+    user = session.exec(select(User).where(User.username == username)).first()
     if not user:
         return {"error": "User not found"}
     return user.model_dump()
@@ -29,7 +29,7 @@ async def get_user(username:str, session: Session=Depends(get_session)):
 
 @user_router.put("/user/{username}")
 async def update_user(username:str, user: User, session: Session = Depends(get_session)):
-    user = session.exec(select(User).where(User.username == username)).one()
+    user = session.exec(select(User).where(User.username == username)).first()
     if not user:
         return {"error": "User not found"}
     user.username = user.username
@@ -42,7 +42,7 @@ async def update_user(username:str, user: User, session: Session = Depends(get_s
 
 @user_router.delete("/user/{username}")
 async def delete_user(username:str, session: Session = Depends(get_session)):
-    user = session.exec(select(User).where(User.username == username)).one()
+    user = session.exec(select(User).where(User.username == username)).first()
     if not user:
         return {"error": "User not found"}
     session.delete(user)
