@@ -7,8 +7,7 @@ from src.routes.user import user_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    yield 
-
+    yield
 
 
 app = FastAPI(lifespan=lifespan)
