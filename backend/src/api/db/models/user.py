@@ -8,7 +8,6 @@ from datetime import datetime
 
 class User(SQLModel, table=True):
     id: uuid.UUID = Field(default=uuid.uuid4(), primary_key=True)
-    # id: int | None = Field(default=None, primary_key=True)
     username: str = Field(index=True, max_length=50)
     email: str = Field(sa_column=Column("email", String, unique=True, index=True))
     first_name: str = Field(max_length=25)
