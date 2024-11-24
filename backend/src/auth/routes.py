@@ -1,22 +1,40 @@
 from fastapi import APIRouter
+from fastapi import Depends
+from sqlmodel import Session
 from src.settings.db import get_session
+from src.auth.schemas import UserCreateModel
+from src.resources.user_manager import UserManager
 
 user_router = APIRouter()
 
-# create 
+
+# create
 @user_router.post("/user")
-async def create_user():
-    return {"message": "User created"}
+async def create_user(
+    user_data: UserCreateModel,
+    session: Session = Depends(get_session),
+    manager: UserManager = Depends(UserManager),
+):
+    user_email = user_data.email
+    user_exists = manager.user_exists(email=user_email, session=session)
+    if user_exists:
+        return {"error": "User already exists"}
+
+    new_user = manager.create_user(session=session, user_data=user_data)
+    return new_user.model_dump()
+
 
 # read
 @user_router.get("/user/{user_id}")
 async def read_user(user_id: int):
     return {"message": "User read"}
 
+
 # update
 @user_router.put("/user/{user_id}")
 async def update_user(user_id: int):
     return {"message": "User updated"}
+
 
 # delete
 @user_router.delete("/user/{user_id}")
