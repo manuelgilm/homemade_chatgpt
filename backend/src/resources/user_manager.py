@@ -8,6 +8,9 @@ from typing import Optional
 
 class UserManager:
 
+    def __init__(self):
+        print("UserManager initialized")
+        
     def create_user(self, session: Session, user_data: UserCreateModel) -> User:
         user_data_dict = user_data.model_dump()
         new_user = User(**user_data_dict)
