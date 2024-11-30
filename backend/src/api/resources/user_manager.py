@@ -1,6 +1,6 @@
-from src.db.models.user import User
-from src.auth.schemas import UserCreateModel
-from src.auth.utils import generate_passwd_hash
+from src.api.db.models.user import User
+from src.api.auth.schemas import UserCreateModel
+from src.api.auth.utils import generate_passwd_hash
 from sqlmodel import Session
 from sqlmodel import select
 from typing import Optional
@@ -10,7 +10,7 @@ class UserManager:
 
     def __init__(self):
         print("UserManager initialized")
-        
+
     def create_user(self, session: Session, user_data: UserCreateModel) -> User:
         user_data_dict = user_data.model_dump()
         new_user = User(**user_data_dict)

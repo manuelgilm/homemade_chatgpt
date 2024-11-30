@@ -1,12 +1,14 @@
 from pydantic import BaseModel
-from datetime import datetime 
+from datetime import datetime
 from sqlmodel import Field
-from typing import List 
+from typing import List
+
 
 class Message(BaseModel):
     text: str
     creator: str
     created_at: datetime = Field(default=datetime.now())
+
 
 class Interaction(BaseModel):
     messages: List[Message]
