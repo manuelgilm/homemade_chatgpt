@@ -3,8 +3,10 @@ from datetime import datetime
 from sqlmodel import Field
 from typing import List
 from sqlmodel import SQLModel
+from sqlmodel import Relationship
 import uuid
 from typing import Optional
+from src.api.db.models.user import User
 
 
 class Message(BaseModel):
