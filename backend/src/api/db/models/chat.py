@@ -1,24 +1,10 @@
-from pydantic import BaseModel
+from src.api.resources.llm_core.data_models import ChatHistory
 from datetime import datetime
 from sqlmodel import Field
 from typing import List
 from sqlmodel import SQLModel
-from sqlmodel import Relationship
 import uuid
 from typing import Optional
-from src.api.db.models.user import User
-
-
-class Message(BaseModel):
-    text: str
-    creator: str
-    created_at: datetime = Field(default=datetime.now())
-
-
-class Interaction(BaseModel):
-    messages: List[Message]
-    started_at: datetime = Field(default=datetime.now())
-    updated_at: datetime = Field(default=datetime.now())
 
 
 class Chat(SQLModel, table=True):
@@ -30,3 +16,15 @@ class Chat(SQLModel, table=True):
 
     def __repr__(self):
         return f"<Chat {self.name}>"
+
+
+class ChatSession(SQLModel, table=True):
+    id: uuid.UUID = Field(default=uuid.uuid4(), primary_key=True)
+    chat_id: uuid.UUID = Field(foreign_key="chat.id")
+    user_id: uuid.UUID = Field(foreign_key="user.id")
+    created_at: datetime = Field(default=datetime.now())
+    updated_at: datetime = Field(default=datetime.now())
+    chat_history: List[ChatHistory]
+
+    def __repr__(self):
+        return f"<ChatSession {self.id}>"

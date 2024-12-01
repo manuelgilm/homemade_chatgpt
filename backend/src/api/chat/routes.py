@@ -5,6 +5,11 @@ from src.api.auth.dependencies import AccessTokenBearer
 from src.api.resources.chat_manager import ChatManager
 from src.api.chat.schemas import ChatCreateSchema
 from src.api.db.main import get_session
+
+from src.api.resources.llm_core.data_models import Message
+from src.api.resources.chat_manager import ChatManager
+from src.api.resources.chat_manager import ChatSessionManager
+
 from sqlmodel import Session
 import uuid
 
@@ -35,12 +40,6 @@ async def create_chat(
     return new_chat.model_dump()
 
 
-# # Get Chat
-# @chat_router.get("/{chat_id}")
-# async def get_chat(chat_id: int):
-#     pass
-
-
 # Get All Chats
 @chat_router.get("/all")
 async def get_all_chats(
@@ -58,12 +57,6 @@ async def get_all_chats(
     return {"detail": "No chats found"}
 
 
-# # Update Chat
-# @chat_router.put("/{chat_id}")
-# async def update_chat(chat_id: int):
-#     pass
-
-
 # Delete Chat
 @chat_router.delete("/{chat_name}")
 async def delete_chat(
@@ -76,3 +69,37 @@ async def delete_chat(
         return {"detail": "Chat not found"}
     result = chat_manager.delete_chat_by_name(session=session, chat_name=chat_name)
     return result
+
+
+@chat_router.post("/chat-session/{chat_id}")
+async def create_chat_session(
+    chat_id: str,
+    session: Session = Depends(get_session),
+    chat_manager: ChatManager = Depends(ChatManager),
+    user_details: Dict = Depends(access_token_bearer),
+):
+    pass
+
+
+@chat_router.get("/llm-response")
+async def get_llm_response(
+    message: Message,
+    chat_id: str,
+    session_id: str,
+    session: Session = Depends(get_session),
+    chat_session_manager: ChatSessionManager = Depends(ChatSessionManager),
+    user_details: Dict = Depends(access_token_bearer),
+):
+    # validate user message
+    # make call to LLM
+    # get response
+    # add response to chat history
+    # return response
+
+
+# chat steps
+# create chat
+# create chat session
+# for each message in chat session.
+# add user message to Chat History
+# add bot message to Chat History
