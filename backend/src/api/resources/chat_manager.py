@@ -12,7 +12,6 @@ import uuid
 class ChatManager:
 
     def create_chat(self, session: Session, chat_data: Dict) -> Chat:
-
         new_chat = Chat(**chat_data)
         session.add(new_chat)
         session.commit()
@@ -43,5 +42,18 @@ class ChatManager:
     def update_chat(self):
         pass
 
-    def delete_chat(self):
-        pass
+    def delete_chat_by_name(self, session: Session, chat_name: str) -> bool:
+        statement = select(Chat).where(Chat.name == chat_name)
+        result = session.exec(statement).first()
+        session.delete(result)
+        session.commit()
+        return {"detail": "Chat deleted"}
+
+    def delete_chat(self, session: Session, chat_id: str) -> bool:
+        statement = select(Chat).where(Chat.id == uuid.UUID(chat_id))
+        result = session.exec(statement).first()
+        if result:
+            session.delete(result)
+            session.commit()
+            return {"detail": "Chat deleted"}
+        return {"detail": "Chat not found"}

@@ -20,7 +20,6 @@ async def create_chat(
     session: Session = Depends(get_session),
     user_details: Dict = Depends(access_token_bearer),
 ):
-    print("User Details: ", user_details)
     chat_name = chat_data.name
     chat_exists = chat_manager.chat_exists(name=chat_name, session=session)
     if chat_exists:
@@ -65,7 +64,15 @@ async def get_all_chats(
 #     pass
 
 
-# # Delete Chat
-# @chat_router.delete("/{chat_id}")
-# async def delete_chat(chat_id: int):
-#     pass
+# Delete Chat
+@chat_router.delete("/{chat_name}")
+async def delete_chat(
+    chat_name: str,
+    session: Session = Depends(get_session),
+    chat_manager: ChatManager = Depends(ChatManager),
+):
+    chat = chat_manager.get_chat_by_name(chat_name=chat_name, session=session)
+    if not chat:
+        return {"detail": "Chat not found"}
+    result = chat_manager.delete_chat_by_name(session=session, chat_name=chat_name)
+    return result
