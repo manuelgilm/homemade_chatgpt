@@ -3,7 +3,8 @@ from sqlmodel import Session
 from typing import Dict
 from typing import Any
 from src.api.db.models.chat import Chat
-from src.api.db.models.chat import ChatSession
+
+# from src.api.db.models.chat import ChatSession
 from sqlmodel import select
 from typing import Optional
 import uuid
@@ -59,47 +60,47 @@ class ChatManager:
         return {"detail": "Chat not found"}
 
 
-class ChatSessionManager:
+# class ChatSessionManager:
 
-    def __init__(self):
-        pass
+#     def __init__(self):
+#         pass
 
-    def create_chat_session(self, session: Session, user_id: str, chat_id: str) -> Any:
-        new_chat_session = ChatSession(
-            user_id=uuid.UUID(user_id), chat_id=uuid.UUID(chat_id), chat_history=[]
-        )
+#     def create_chat_session(self, session: Session, user_id: str, chat_id: str) -> Any:
+#         new_chat_session = ChatSession(
+#             user_id=uuid.UUID(user_id), chat_id=uuid.UUID(chat_id), chat_history=[]
+#         )
 
-    def chat_history(self):
-        pass
+#     def chat_history(self):
+#         pass
 
-    def get_user_messages(session_id: str):
-        """
-        Returns a dictionary of messages sent by the user
-        structure:
-        user_messages = {
-            "session_id":[{
-                "message":"some text",
-                "created_at":"date time",
-                "reactions":[]
-                }]
-        }
-        """
-        pass
+#     def get_user_messages(session_id: str):
+#         """
+#         Returns a dictionary of messages sent by the user
+#         structure:
+#         user_messages = {
+#             "session_id":[{
+#                 "message":"some text",
+#                 "created_at":"date time",
+#                 "reactions":[]
+#                 }]
+#         }
+#         """
+#         pass
 
-    def get_user_interactions(session_id: str):
-        """
-        Returns a dictionary of interactions with the user.
-        Defining interaction as a collection of messages sent by the user with
-        the answers from the chatbot.
+#     def get_user_interactions(session_id: str):
+#         """
+#         Returns a dictionary of interactions with the user.
+#         Defining interaction as a collection of messages sent by the user with
+#         the answers from the chatbot.
 
-        structure:
-        user_interactions = {
-            "session_id":[{
-                "message":"some text",
-                "created_at":"date time",
-                "reactions":[]
-                }]
-        }
+#         structure:
+#         user_interactions = {
+#             "session_id":[{
+#                 "message":"some text",
+#                 "created_at":"date time",
+#                 "reactions":[]
+#                 }]
+#         }
 
-        """
-        pass
+#         """
+#         pass

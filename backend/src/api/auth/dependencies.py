@@ -5,6 +5,7 @@ from fastapi import status
 from fastapi import Request
 from typing import Optional
 from src.api.auth.utils import decode_token
+from src.api.auth.utils import token_in_blacklist
 
 
 class TokenBearer(HTTPBearer):
@@ -23,6 +24,10 @@ class TokenBearer(HTTPBearer):
             )
 
         token_data = decode_token(token)
+        if token_in_blacklist(token_data["jti"]):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Token has been revoked"
+            )
 
         self.verify_token_data(token_data)
 

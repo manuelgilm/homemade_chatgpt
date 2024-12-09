@@ -3,18 +3,21 @@ from fastapi import Depends
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from sqlmodel import Session
-from src.api.db.main import get_session
+from src.api.resources.user_manager import UserManager
 from src.api.auth.schemas import UserCreateModel
 from src.api.auth.schemas import UserModel
 from src.api.auth.schemas import UserLoginModel
-from src.api.resources.user_manager import UserManager
 from src.api.auth.dependencies import AccessTokenBearer
-from datetime import timedelta
-
+from src.api.auth.dependencies import RefreshTokenBearer
 from src.api.auth.utils import create_access_token
 from src.api.auth.utils import verify_passwd
-from fastapi.responses import JSONResponse
+from src.api.db.main import get_session
+from src.api.auth.utils import add_jti_to_blocklist
 from src.api.settings.configs import REFRESH_TOKEN_EXPIRY
+from datetime import timedelta
+from datetime import datetime
+
+from fastapi.responses import JSONResponse
 
 auth_router = APIRouter(tags=["auth"])
 access_token_bearer = AccessTokenBearer()
@@ -73,6 +76,32 @@ async def login_user(
             "refresh_token": refresh_token,
             "user": {"email": user.email, "uid": str(user.id)},
         }
+    )
+
+
+@auth_router.post("/refresh_token")
+async def get_new_access_token(
+    token_details: RefreshTokenBearer = Depends(RefreshTokenBearer()),
+):
+
+    expiry_timestamp = token_details["exp"]
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        token = create_access_token(user_data=token_details["user"])
+        return JSONResponse(content={"access_token": token})
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+    )
+
+
+@auth_router.get("/logout")
+async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+    jti = token_details["jti"]
+
+    add_jti_to_blocklist(jti)
+
+    return JSONResponse(
+        content={"message": "Logged Out Successfully"}, status_code=status.HTTP_200_OK
     )
 
 

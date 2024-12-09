@@ -9,6 +9,8 @@ from typing import Dict
 import jwt
 import uuid
 
+blacklist = set()
+
 
 passwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -42,3 +44,13 @@ def decode_token(token: str) -> Dict:
         return token_data
     except jwt.PyJWKError as e:
         print(e)
+
+
+def token_in_blacklist(jti: str) -> bool:
+    if jti in blacklist:
+        return True
+    return False
+
+
+def add_jti_to_blocklist(jti: str) -> None:
+    blacklist.add(jti)

@@ -8,7 +8,8 @@ from src.api.db.main import get_session
 
 from src.api.resources.llm_core.data_models import Message
 from src.api.resources.chat_manager import ChatManager
-from src.api.resources.chat_manager import ChatSessionManager
+
+# from src.api.resources.chat_manager import ChatSessionManager
 
 from sqlmodel import Session
 import uuid
@@ -79,27 +80,3 @@ async def create_chat_session(
     user_details: Dict = Depends(access_token_bearer),
 ):
     pass
-
-
-@chat_router.get("/llm-response")
-async def get_llm_response(
-    message: Message,
-    chat_id: str,
-    session_id: str,
-    session: Session = Depends(get_session),
-    chat_session_manager: ChatSessionManager = Depends(ChatSessionManager),
-    user_details: Dict = Depends(access_token_bearer),
-):
-    # validate user message
-    # make call to LLM
-    # get response
-    # add response to chat history
-    # return response
-
-
-# chat steps
-# create chat
-# create chat session
-# for each message in chat session.
-# add user message to Chat History
-# add bot message to Chat History
