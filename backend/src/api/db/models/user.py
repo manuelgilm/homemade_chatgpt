@@ -12,6 +12,7 @@ class User(SQLModel, table=True):
     email: str = Field(sa_column=Column("email", String, unique=True, index=True))
     first_name: str = Field(max_length=25)
     last_name: str = Field(max_length=25)
+    role: str = Field(default="user", max_length=25)
     is_verified: bool = Field(default=False)
     hashed_password: str = Field(max_length=50)
     created_at: datetime = Field(default=datetime.now())

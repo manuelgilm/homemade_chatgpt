@@ -9,6 +9,8 @@ from src.api.auth.schemas import UserModel
 from src.api.auth.schemas import UserLoginModel
 from src.api.auth.dependencies import AccessTokenBearer
 from src.api.auth.dependencies import RefreshTokenBearer
+from src.api.auth.dependencies import RoleChecker
+from src.api.auth.dependencies import get_current_user
 from src.api.auth.utils import create_access_token
 from src.api.auth.utils import verify_passwd
 from src.api.db.main import get_session
@@ -21,6 +23,7 @@ from fastapi.responses import JSONResponse
 
 auth_router = APIRouter(tags=["auth"])
 access_token_bearer = AccessTokenBearer()
+role_checker = RoleChecker(["admin"])
 
 
 # create
@@ -95,35 +98,52 @@ async def get_new_access_token(
 
 
 @auth_router.get("/logout")
-async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+async def revoke_token(token_details: AccessTokenBearer = Depends(access_token_bearer)):
     jti = token_details["jti"]
 
     add_jti_to_blocklist(jti)
-
     return JSONResponse(
         content={"message": "Logged Out Successfully"}, status_code=status.HTTP_200_OK
     )
 
 
-# read
-@auth_router.get("/user/{user_id}")
-async def read_user(user_id: int, manager: UserManager = Depends(UserManager)):
-    return {"message": "User read"}
+@auth_router.get("/me")
+async def get_current_user(user_details=Depends(get_current_user)):
+    return user_details
 
 
-# update
-@auth_router.put("/user/{user_id}")
-async def update_user(user_id: int):
-    return {"message": "User updated"}
+@auth_router.post("/create_admin")
+async def create_admin(
+    session: Session = Depends(get_session),
+    manager: UserManager = Depends(UserManager),
+):
+    user_data = UserCreateModel(
+        email="admin@admin.com",
+        last_name="admin",
+        first_name="admin",
+        username="admin",
+        password="admin123",
+    )
+
+    user_email = user_data.email
+    user_exists = manager.user_exists(email=user_email, session=session)
+    if user_exists:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User already exists",
+        )
+
+    new_user = manager.create_user(session=session, user_data=user_data, role="admin")
+    return new_user.model_dump()
 
 
-# delete
-@auth_router.delete("/user/{user_id}")
-async def delete_user(user_id: int):
-    return {"message": "User deleted"}
+# admin operations
+@auth_router.get("/users/all", dependencies=[Depends(role_checker)])
+async def list_users(
+    session: Session = Depends(get_session),
+    manager: UserManager = Depends(UserManager),
+    role_checker: RoleChecker = Depends(role_checker),
+):
+    users = manager.list_users(session=session)
 
-
-@auth_router.get("/protected")
-async def protected_route(user_details=Depends(access_token_bearer)):
-    print(user_details)
-    return {"message": "Protected route"}
+    return users

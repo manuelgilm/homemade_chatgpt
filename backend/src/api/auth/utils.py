@@ -1,7 +1,10 @@
+from fastapi import Depends
+from sqlmodel import Session
 from src.api.settings.configs import JWT_SECRET
 from src.api.settings.configs import JWT_ALGORITHM
 from src.api.settings.configs import ACCESS_TOKEN_EXPIRY
-
+from src.api.db.main import get_session
+from src.api.db.models.user import User
 from passlib.context import CryptContext
 from datetime import timedelta
 from datetime import datetime
@@ -54,3 +57,22 @@ def token_in_blacklist(jti: str) -> bool:
 
 def add_jti_to_blocklist(jti: str) -> None:
     blacklist.add(jti)
+
+
+# admin
+[
+    "adding users",
+    "change roles",
+    "crud on users",
+    "book submissions",
+    "crud on reviews",
+    "crud on reviews",
+    "revoking access",
+]
+
+# user
+[
+    "crud on their own book submissions",
+    "crud on their own reviews",
+    "crud on their own accounts",
+]

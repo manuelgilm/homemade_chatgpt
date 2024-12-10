@@ -11,8 +11,11 @@ class UserManager:
     def __init__(self):
         print("UserManager initialized")
 
-    def create_user(self, session: Session, user_data: UserCreateModel) -> User:
+    def create_user(
+        self, session: Session, user_data: UserCreateModel, role: Optional[str] = "user"
+    ) -> User:
         user_data_dict = user_data.model_dump()
+        user_data_dict["role"] = role
         new_user = User(**user_data_dict)
         new_user.hashed_password = generate_passwd_hash(
             password=user_data_dict["password"]
@@ -33,14 +36,7 @@ class UserManager:
         result = session.exec(statement).first()
         return result
 
-    def get_user(self):
-        pass
-
-    def update_user(self):
-        pass
-
-    def delete_user(self):
-        pass
-
-    def list_users(self):
-        pass
+    def list_users(self, session: Session):
+        statement = select(User)
+        result = session.exec(statement).all()
+        return result

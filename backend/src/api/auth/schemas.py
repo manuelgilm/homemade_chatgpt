@@ -14,11 +14,11 @@ class UserCreateModel(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "first_name": "John",
-                "last_name": "Doe",
-                "username": "johndoe",
-                "email": "johndoe123@co.com",
-                "password": "password123",
+                "first_name": "user",
+                "last_name": "user",
+                "username": "user",
+                "email": "user@user.com",
+                "password": "user123",
             }
         }
     }
